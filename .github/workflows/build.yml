@@ -11,10 +11,17 @@ jobs:
       - name: Depoyu Cek
         uses: actions/checkout@v4
 
-      - name: Half-Life SDK ve Metamod SDK Indir
-        run: |
-          git clone --depth 1 https://github.com
-          git clone --depth 1 https://github.com
+      - name: Half-Life SDK Indir
+        uses: actions/checkout@v4
+        with:
+          repository: alliedmodders/hlsdk
+          path: hlsdk
+
+      - name: Metamod SDK Indir
+        uses: actions/checkout@v4
+        with:
+          repository: alliedmodders/metamod-hl1
+          path: metamod-hl1
 
       - name: Visual Studio x86 Derleyiciyi Kur
         uses: ilammy/msvc-dev-cmd@v1
