@@ -10,12 +10,24 @@ mutil_funcs_t *gpMetaUtilFuncs;
 enginefuncs_t g_engfuncs;
 globalvars_t *gpGlobals;
 
+plugin_info_t Plugin_info = {
+    META_INTERFACE_VERSION,
+    "Ozel Yerel Pratik Eklentisi v3",
+    "3.0",
+    "2026",
+    "Genis kapsamli yerel pratik ve sunucu komut eklentisi",
+    "OZEL_PRATIK_V3",
+    "https://example.com",
+    PT_ANYTIME,
+    PT_ANYTIME
+};
+
 static void Komut_Durum()
 {
     const char *mapname = STRING(gpGlobals->mapname);
-    SERVER_PRINTF("[OZEL_PRATIK_V3] Aktif | Harita: %s | Yercekimi: %.0f\n",
-                  mapname ? mapname : "bilinmiyor",
-                  CVAR_GET_FLOAT("sv_gravity"));
+    LOG_CONSOLE(PLID, "[OZEL_PRATIK_V3] Aktif | Harita: %s | Yercekimi: %.0f",
+                mapname ? mapname : "bilinmiyor",
+                CVAR_GET_FLOAT("sv_gravity"));
 }
 
 static void Komut_Para()
@@ -30,7 +42,7 @@ static void Komut_Para()
     if (miktar < 0) miktar = 0;
     if (miktar > 16000) miktar = 16000;
 
-    SERVER_PRINTF("[OZEL_PRATIK_V3] Hedef para: %d$\n", miktar);
+    LOG_CONSOLE(PLID, "[OZEL_PRATIK_V3] Hedef para: %d$", miktar);
 }
 
 static void Komut_Restart()
@@ -53,7 +65,7 @@ static void Komut_Yercekimi()
 
     char cmd[64];
     std::snprintf(cmd, sizeof(cmd), "sv_gravity %d\n", grav);
-    SERVER_PRINTF("[OZEL_PRATIK_V3] sv_gravity -> %d\n", grav);
+    LOG_CONSOLE(PLID, "[OZEL_PRATIK_V3] sv_gravity -> %d", grav);
     SERVER_COMMAND("sv_cheats 1\n");
     SERVER_COMMAND(cmd);
 }
@@ -72,7 +84,7 @@ static void Komut_RoundSuresi()
 
     char cmd[64];
     std::snprintf(cmd, sizeof(cmd), "mp_roundtime %d\n", dk);
-    SERVER_PRINTF("[OZEL_PRATIK_V3] mp_roundtime -> %d dk\n", dk);
+    LOG_CONSOLE(PLID, "[OZEL_PRATIK_V3] mp_roundtime -> %d dk", dk);
     SERVER_COMMAND("sv_cheats 1\n");
     SERVER_COMMAND(cmd);
 }
@@ -91,7 +103,7 @@ static void Komut_Freezetime()
 
     char cmd[64];
     std::snprintf(cmd, sizeof(cmd), "mp_freezetime %d\n", sn);
-    SERVER_PRINTF("[OZEL_PRATIK_V3] mp_freezetime -> %d sn\n", sn);
+    LOG_CONSOLE(PLID, "[OZEL_PRATIK_V3] mp_freezetime -> %d sn", sn);
     SERVER_COMMAND("sv_cheats 1\n");
     SERVER_COMMAND(cmd);
 }
@@ -117,10 +129,10 @@ static void Komut_BotTemizle()
 static void Komut_HaritaBilgi()
 {
     const char *mapname = STRING(gpGlobals->mapname);
-    SERVER_PRINTF("[OZEL_PRATIK_V3] Harita: %s | Maks Oyuncu: %d | Zaman: %.1f\n",
-                  mapname ? mapname : "yok",
-                  gpGlobals->maxClients,
-                  gpGlobals->time);
+    LOG_CONSOLE(PLID, "[OZEL_PRATIK_V3] Harita: %s | Maks Oyuncu: %d | Zaman: %.1f",
+                mapname ? mapname : "yok",
+                gpGlobals->maxClients,
+                gpGlobals->time);
 }
 
 static void Komut_Yardim()
@@ -132,26 +144,13 @@ static void Komut_Yardim()
     SERVER_PRINT("ozel_bot_dondur | ozel_bot_coz | ozel_bot_temizle\n");
 }
 
-plugin_info_t Plugin_info = {
-    META_INTERFACE_VERSION,
-    "Ozel Yerel Pratik Eklentisi v3",
-    "3.0",
-    "2026",
-    "Genis kapsamli yerel pratik ve sunucu komut eklentisi",
-    "OZEL_PRATIK_V3",
-    "https://example.com",
-    "LOCAL",
-    PT_ANYTIME,
-    PT_ANYTIME
-};
-
 C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pengfuncsFromEngine, globalvars_t *pGlobals)
 {
     std::memcpy(&g_engfuncs, pengfuncsFromEngine, sizeof(enginefuncs_t));
     gpGlobals = pGlobals;
 }
 
-C_DLLEXPORT int Meta_Query(char *ifvers, plugin_info_t **pPlugInfo, mutil_funcs_t *pMetaUtilFuncs)
+C_DLLEXPORT int Meta_Query(const char *ifvers, plugin_info_t **pPlugInfo, mutil_funcs_t *pMetaUtilFuncs)
 {
     *pPlugInfo = &Plugin_info;
     gpMetaUtilFuncs = pMetaUtilFuncs;
@@ -184,10 +183,6 @@ C_DLLEXPORT int Meta_Detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
     SERVER_PRINT("[OZEL_PRATIK_V3] Eklenti kaldirildi.\n");
     return TRUE;
 }
-
-static META_FUNCTIONS gMetaFunctionTable = {
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
-};
 
 C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion)
 {
