@@ -32,6 +32,7 @@ jobs:
         run: |
           cl /nologo /O2 /MT /LD /DWIN32 /D_WINDOWS /D_USRDLL `
             /I"metamod-hl1\metamod" `
+            /I"hlsdk\public" `
             /I"hlsdk\common" `
             /I"hlsdk\dlls" `
             /I"hlsdk\engine" `
