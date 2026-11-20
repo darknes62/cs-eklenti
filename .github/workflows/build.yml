@@ -1,0 +1,38 @@
+name: Build Metamod DLL
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Depoyu Cek
+        uses: actions/checkout@v4
+
+      - name: Half-Life SDK ve Metamod SDK Indir
+        run: |
+          git clone --depth 1 https://github.com
+          git clone --depth 1 https://github.com
+
+      - name: Visual Studio x86 Derleyiciyi Kur
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
+
+      - name: DLL Derle
+        run: |
+          cl /nologo /O2 /MT /LD /DWIN32 /D_WINDOWS /D_USRDLL `
+            /I"metamod-hl1\metamod" `
+            /I"hlsdk\common" `
+            /I"hlsdk\dlls" `
+            /I"hlsdk\engine" `
+            /I"hlsdk\pm_shared" `
+            plugin.cpp /Fe:ozel_pratik_v3.dll
+
+      - name: DLL Dosyasini Yayinla
+        uses: actions/upload-artifact@v4
+        with:
+          name: ozel_pratik_v3-dll
+          path: ozel_pratik_v3.dll
